@@ -482,7 +482,7 @@ class ApiMain extends ApiBase {
 	/**
 	 * Check the &origin= query parameter against the Origin: HTTP header and respond appropriately.
 	 *
-	 * If no origin parameter is present, nothing happens.
+	 * If no origin parameter is present, allow unauthenticated cross-domain requests only.
 	 * If an origin parameter is present but doesn't match the Origin header, a 403 status code
 	 * is set and false is returned.
 	 * If the parameter and the header do match, the header is checked against $wgCrossSiteAJAXdomains
@@ -496,7 +496,8 @@ class ApiMain extends ApiBase {
 	protected function handleCORS() {
 		$originParam = $this->getParameter( 'origin' ); // defaults to null
 		if ( $originParam === null ) {
-			// No origin parameter, nothing to do
+			// No origin parameter, allow unauthenticated cross-domain requests only
+			$this->getRequest()->response()->header( "Access-Control-Allow-Origin: *" );
 			return true;
 		}
 
